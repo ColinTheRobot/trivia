@@ -137,7 +137,7 @@ var triviaGame = {
     scoreDisplay.innerText = `Score: ${this.score}`;
 
     setTimeout(function() {
-      alert(`Game over! Your score is ${self.score} out of ${Object.keys(self.trviaQuestions).length}`)
+      alert(`Game over! Your score is ${self.score} out of ${Object.keys(self.triviaQuestions).length}`)
       triviaGame.reset()
     }, 400)
   }
