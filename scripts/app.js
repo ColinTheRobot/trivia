@@ -1,17 +1,18 @@
-window.onload = function() {
+$(document).ready(function() {
   console.log('Loaded, bro');
-  var startButton = document.getElementById('start');
-  var resetButton = document.getElementById('reset');
+  var $startButton = $('#start');
+  var $resetButton = $('#reset');
 
-  startButton.addEventListener('click', function() {
-    console.log('Starting a game!');
+  $startButton.click(function($event) {
+    $event.stopPropagation()
+    console.log('Starting a game!', $event);
     triviaGame.start();
   });
 
-  resetButton.addEventListener('click', function() {
+  $resetButton.click(function($event) {
     triviaGame.reset()
   })
-}
+})
 
 
 var triviaGame = {
@@ -40,69 +41,68 @@ var triviaGame = {
   progress: 0,
 
   start: function() {
-    // var scoreDisplay = document.querySelector('.score');
-    // // set current score
-    // scoreDisplay.innerText = `Score: ${this.score}`;
+    var $scoreDisplay = $('.score');
+    // set current score
+    $scoreDisplay.text(`Score: ${this.score}`);
 
     this.loadQuestion('1');
   },
 
   loadQuestion: function(questionKey) {
     // set our variables
-    var questionContainer = document.querySelector('.question-container');
-    var questionDisplay = document.querySelector('.question');
-    var answerDisplay = document.querySelector('.answers-container');
+    var $questionContainer = $('.question-container');
+    var $questionDisplay = $('.question');
+    var $answerDisplay = $('.answers-container');
 
     // reset question and answers
-    questionDisplay.innerText = ""
-    answerDisplay.innerHTML = ""
+    $questionDisplay.text("")
+    $answerDisplay.html("")
 
     // set current score
-    var scoreDisplay = document.querySelector('.score');
-    scoreDisplay.innerText = `Score: ${this.score}`;
+    var $scoreDisplay = $('.score');
+    $scoreDisplay.text(`Score: ${this.score}`);
 
     // set question
-    questionDisplay.innerHTML = this.triviaQuestions[questionKey].question;
-    questionContainer.setAttribute("data-answer", questionKey)
+    $questionDisplay.text(this.triviaQuestions[questionKey].question);
+    $questionContainer.attr("data-answer", questionKey)
 
     // loop to build our answer
     for (answer in this.triviaQuestions[questionKey].answers) {
       // set our vars to clean up logic
-      var answerContainer = document.createElement('div');
+      var $answerContainer = $('<div>');
       var data = this.triviaQuestions[questionKey].answers[answer];
 
       // set some attribute stuff
-      answerContainer.setAttribute("class", answer);
-      answerContainer.setAttribute("class", "answer");
-      answerContainer.setAttribute("data-answer", data.key);
-      answerContainer.innerText = data.text;
+      $answerContainer.attr("class", answer);
+      $answerContainer.attr("class", "answer");
+      $answerContainer.attr("data-answer", data.key);
+      $answerContainer.text(data.text);
 
       // add an event listener to check if the answer is right
 
-      answerContainer.addEventListener('click', function(event) {
-        var answer = this;
-
-        triviaGame.checkAnswer(answer)
+      $answerContainer.click(function($event) {
+        var $answer = $(this);
+        // debugger
+        triviaGame.checkAnswer($answer)
       })
-
-      answerDisplay.appendChild(answerContainer);
+      $answerContainer.appendTo($answerDisplay);
     }
+    console.log($answerDisplay)
   },
 
-  checkAnswer: function(answerNode) {
-    this.progress +=1
-
-    if (answerNode.getAttribute('data-answer') === "true") {
+  checkAnswer: function($answerNode) {
+    this.progress += 1
+    if ($answerNode.attr('data-answer') === 'true') {
       this.score += 1
-      answerNode.style.backgroundColor = "green";
-      this.nextQuestion(answerNode);
+      $answerNode.css({backgroundColor: 'green'});
+      this.nextQuestion($answerNode);
     } else {
-      answerNode.style.backgroundColor = "red";
-      this.nextQuestion(answerNode);
+      $answerNode.css({backgroundColor: 'red'});
+      this.nextQuestion($answerNode);
     }
   },
 
-  nextQuestion: function(answer) {
+  nextQuestion: function($answer) {
     var self = this;
 
     setTimeout(function() {
@@ -119,22 +119,22 @@ var triviaGame = {
   },
 
   reset: function() {
-    var questionDisplay = document.querySelector('.question');
-    var answerDisplay = document.querySelector('.answers-container');
-    var scoreDisplay = document.querySelector('.score');
+    var $questionDisplay = $('.question');
+    var $answerDisplay = $('.answers-container');
+    var $scoreDisplay = $('.score');
 
     this.progress = 0
     this.score = 0
 
-    questionDisplay.innerText = ""
-    answerDisplay.innerHTML = ""
-    scoreDisplay.innerText = `Score: ${this.score}`;
+    $questionDisplay.text('')
+    $answerDisplay.html('')
+    $scoreDisplay.text(`Score: ${this.score}`);
   },
 
   triggerWinState: function() {
     var self = this;
-    var scoreDisplay = document.querySelector('.score');
-    scoreDisplay.innerText = `Score: ${this.score}`;
+    var $scoreDisplay = $('.score');
+    $scoreDisplay.text(`Score: ${this.score}`);
 
     setTimeout(function() {
       alert(`Game over! Your score is ${self.score} out of ${Object.keys(self.triviaQuestions).length}`)
